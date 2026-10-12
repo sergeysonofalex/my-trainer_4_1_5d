@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>🚀 Космический квест Scratch-Кота: Врата Логики</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:'Trebuchet MS','Segoe UI',Roboto,system-ui,sans-serif;
+  min-height:100vh;color:#fff;background:#0B1026;line-height:1.45;padding:10px;
+  background-image:
+    radial-gradient(circle at 12% 8%, rgba(139,92,246,.45), transparent 42%),
+    radial-gradient(circle at 88% 5%, rgba(59,130,246,.38), transparent 40%),
+    radial-gradient(circle at 50% 105%, rgba(255,159,28,.22), transparent 52%),
+    radial-gradient(circle at 6% 85%, rgba(74,222,128,.16), transparent 42%);
+  background-attachment:fixed;
+  -webkit-tap-highlight-color:transparent;
+}
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:
+    radial-gradient(2px 2px at 8% 18%, rgba(255,255,255,.85), transparent),
+    radial-gradient(2px 2px at 22% 62%, rgba(255,255,255,.6), transparent),
+    radial-gradient(1.5px 1.5px at 35% 12%, rgba(255,255,255,.7), transparent),
+    radial-gradient(2px 2px at 48% 78%, rgba(255,255,255,.55), transparent),
+    radial-gradient(1.5px 1.5px at 61% 28%, rgba(255,255,255,.75), transparent),
+    radial-gradient(2px 2px at 74% 66%, rgba(255,255,255,.6), transparent),
+    radial-gradient(1.5px 1.5px at 86% 22%, rgba(255,255,255,.8), transparent),
+    radial-gradient(2px 2px at 94% 74%, rgba(255,255,255,.5), transparent),
+    radial-gradient(1.5px 1.5px at 15% 92%, rgba(255,255,255,.65), transparent),
+    radial-gradient(2px 2px at 68% 94%, rgba(255,255,255,.5), transparent);
+}
+#app{max-width:1180px;margin:0 auto;position:relative;z-index:1}
+.screen{display:none;animation:fadeUp .35s ease}
+.screen.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.hidden{display:none !important}
+
+.card{
+  background:rgba(30,27,75,.74);
+  border:2px solid rgba(139,92,246,.5);
+  border-radius:24px;padding:20px;
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  box-shadow:0 18px 50px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.1);
+}
+
+/* ===== СТАРТОВЫЙ ЭКРАН ===== */
+.start-card{text-align:center;max-width:720px;margin:24px auto;padding:32px 24px}
+.rocket{font-size:clamp(48px,10vw,84px);line-height:1;animation:float 2.6s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0) rotate(-6deg)}50%{transform:translateY(-16px) rotate(6deg)}}
+.start-card h1{
+  font-size:clamp(22px,4.4vw,36px);margin:12px 0 4px;font-weight:800;
+  background:linear-gradient(90deg,#FBBF24,#F472B6,#8B5CF6,#38BDF8,#4ADE80);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.start-card h2{font-size:clamp(16px,3vw,24px);color:#C4B5FD;margin-bottom:14px;font-weight:700}
+.start-desc{font-size:16px;color:#DDD6FE;margin-bottom:20px}
+.start-desc b{color:#FBBF24}
+#nameForm{display:flex;flex-direction:column;gap:12px;max-width:420px;margin:0 auto 20px}
+#playerName{
+  padding:16px 20px;border-radius:16px;border:2px solid rgba(139,92,246,.6);
+  background:rgba(11,16,38,.8);color:#fff;font-size:17px;font-family:inherit;text-align:center;outline:none;
+  transition:.2s;
+}
+#playerName:focus{border-color:#FBBF24;box-shadow:0 0 0 4px rgba(251,191,36,.18)}
+#playerName::placeholder{color:#8B8BB0}
+
+.btn{
+  border:none;border-radius:16px;padding:15px 26px;font-size:17px;font-weight:800;
+  cursor:pointer;font-family:inherit;color:#fff;
+  background:linear-gradient(135deg,#8B5CF6,#6D28D9);
+  box-shadow:0 6px 0 #4C1D95, 0 10px 22px rgba(0,0,0,.35);
+  transition:transform .1s, box-shadow .1s, filter .15s;
+  touch-action:manipulation;
+}
+.btn:hover{filter:brightness(1.1)}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 #4C1D95}
+.btn.big{font-size:20px;padding:18px 32px;background:linear-gradient(135deg,#F97316,#EA580C);box-shadow:0 6px 0 #9A3412,0 10px 22px rgba(0,0,0,.35)}
+.btn.big:active{box-shadow:0 2px 0 #9A3412}
+.btn:disabled{opacity:.45;cursor:not-allowed;filter:grayscale(.5)}
+.btn:disabled:active{transform:none;box-shadow:0 6px 0 #4C1D95}
+
+.rules-box{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;
+  margin:0 auto 22px;max-width:640px;
+}
+.rule{
+  background:rgba(139,92,246,.16);border:1px solid rgba(139,92,246,.4);
+  border-radius:14px;padding:10px 8px;font-size:13px;font-weight:700;color:#DDD6FE;
+}
+.rule span{display:block;font-size:22px;margin-bottom:2px}
+
+/* ===== HUD ===== */
+.hud{
+  display:flex;flex-wrap:wrap;gap:8px;justify-content:center;
+  background:rgba(30,27,75,.8);border:2px solid rgba(139,92,246,.45);
+  border-radius:20px;padding:10px 12px;margin-bottom:12px;
+  box-shadow:0 10px 30px rgba(0,0,0,.35);
+}
+.hud-chip{
+  display:flex;align-items:center;gap:6px;
+  background:rgba(139,92,246,.18);border:1px solid rgba(139,92,246,.4);
+  border-radius:12px;padding:6px 12px;font-weight:700;font-size:15px;
+  white-space:nowrap;
+}
+.chip-label{font-size:15px}
+.chip-value{color:#FDE68A}
+#hudLives{letter-spacing:-2px;font-size:15px;color:#fff}
+.hud-chip.timer .chip-value{color:#7DD3FC;font-variant-numeric:tabular-nums}
+.hud-chip.timer.danger{background:rgba(239,68,68,.3);border-color:#EF4444;animation:pulseRed .8s infinite}
+.hud-chip.timer.danger .chip-value{color:#FCA5A5}
+@keyframes pulseRed{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+
+.progress-row{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.progress-track{flex:1;height:14px;border-radius:10px;background:rgba(11,16,38,.75);overflow:hidden;border:1px solid rgba(139,92,246,.4)}
+.progress-fill{height:100%;width:0%;border-radius:10px;background:linear-gradient(90deg,#8B5CF6,#3B82F6,#4ADE80);transition:width .4s ease}
+.progress-text{font-size:13px;font-weight:800;color:#C4B5FD;white-space:nowrap}
+
+/* ===== ВОПРОС ===== */
+.q-card{padding:20px}
+.q-top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.q-badge{
+  background:linear-gradient(135deg,#F59E0B,#F97316);border-radius:12px;
+  padding:6px 14px;font-size:13px;font-weight:800;box-shadow:0 4px 12px rgba(249,115,22,.35)
+}
+.q-num{font-size:13px;font-weight:800;color:#A5B4FC}
+.q-title{font-size:clamp(17px,2.6vw,23px);font-weight:800;margin-bottom:16px;line-height:1.35}
+.q-body{margin-top:4px}
+
+/* choice */
+.options{display:grid;grid-template-columns:1fr;gap:12px}
+@media(min-width:820px){.options{grid-template-columns:1fr 1fr}}
+.opt{
+  display:flex;align-items:center;gap:14px;width:100%;text-align:left;
+  padding:16px 18px;border-radius:18px;font-size:16px;font-weight:700;
+  background:linear-gradient(135deg, rgba(139,92,246,.28), rgba(59,130,246,.22));
+  border:2px solid rgba(139,92,246,.55);color:#fff;cursor:pointer;font-family:inherit;
+  transition:.16s;touch-action:manipulation;min-height:64px;
+}
+.opt:hover{transform:translateX(5px);border-color:#FBBF24;background:linear-gradient(135deg, rgba(251,191,36,.22), rgba(139,92,246,.28))}
+.opt-key{
+  flex:0 0 34px;height:34px;line-height:34px;text-align:center;border-radius:10px;
+  background:rgba(255,255,255,.18);font-weight:900;font-size:15px;
+}
+.opt.good{background:linear-gradient(135deg, rgba(74,222,128,.45), rgba(34,197,94,.3)) !important;border-color:#4ADE80 !important;transform:translateX(5px)}
+.opt.bad{background:linear-gradient(135deg, rgba(248,113,113,.45), rgba(239,68,68,.3)) !important;border-color:#F87171 !important;animation:shake .35s}
+.opt.disabled{pointer-events:none;opacity:.75}
+.opt.good.disabled,.opt.bad.disabled{opacity:1}
+@keyframes shake{0%,100%{transform:translateX(5px)}25%{transform:translateX(-6px)}75%{transform:translateX(10px)}}
+
+/* truefalse */
+.tf-wrap{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.tf-btn{
+  padding:28px 12px;border-radius:20px;font-size:clamp(16px,2.6vw,22px);font-weight:900;
+  color:#fff;cursor:pointer;font-family:inherit;border:3px solid;transition:.16s;touch-action:manipulation;
+}
+.tf-true{background:rgba(74,222,128,.18);border-color:#4ADE80}
+.tf-false{background:rgba(248,113,113,.18);border-color:#F87171}
+.tf-btn:hover{transform:translateY(-4px)}
+.tf-btn.good{background:rgba(74,222,128,.55);border-color:#22C55E}
+.tf-btn.bad{background:rgba(248,113,113,.55);border-color:#EF4444}
+.tf-btn:disabled{pointer-events:none;opacity:.6}
+.tf-btn.good:disabled,.tf-btn.bad:disabled{opacity:1}
+
+/* matching */
+.match-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.match-col{display:flex;flex-direction:column;gap:10px}
+.match-item{
+  padding:14px 10px;border-radius:14px;border:2px solid rgba(139,92,246,.5);
+  background:rgba(139,92,246,.16);color:#fff;font-size:15px;font-weight:700;
+  cursor:pointer;font-family:inherit;transition:.16s;text-align:center;
+  min-height:58px;display:flex;align-items:center;justify-content:center;
+  touch-action:manipulation;
+}
+.match-item:hover{border-color:#FBBF24}
+.match-item.selected{border-color:#FBBF24;background:rgba(251,191,36,.28);transform:scale(1.05)}
+.match-item.matched{border-width:3px}
+
+/* category */
+.cat-pool{
+  display:flex;flex-wrap:wrap;gap:10px;min-height:76px;padding:12px;border-radius:16px;
+  border:2px dashed rgba(139,92,246,.55);background:rgba(139,92,246,.08);
+  justify-content:center;align-items:center;
+}
+.cat-item{
+  padding:12px 16px;border-radius:12px;border:2px solid rgba(255,255,255,.28);
+  background:rgba(59,130,246,.32);color:#fff;font-weight:800;font-size:15px;
+  cursor:pointer;font-family:inherit;transition:.16s;touch-action:manipulation;
+}
+.cat-item:hover{border-color:#FBBF24}
+.cat-item.selected{border-color:#FBBF24;background:rgba(251,191,36,.45);transform:scale(1.07)}
+.cat-bins{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.cat-bin{min-height:140px;border-radius:18px;padding:10px;border:3px dashed;cursor:pointer;transition:.16s}
+.bin-true{border-color:#4ADE80;background:rgba(74,222,128,.1)}
+.bin-false{border-color:#F87171;background:rgba(248,113,113,.1)}
+.cat-bin:hover{filter:brightness(1.15)}
+.bin-title{text-align:center;font-weight:900;margin-bottom:8px;font-size:15px}
+.bin-items{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.bin-items .cat-item{font-size:14px;padding:9px 12px}
+
+/* order */
+.order-pool{
+  display:flex;flex-wrap:wrap;gap:10px;justify-content:center;padding:12px;
+  border-radius:16px;border:2px dashed rgba(139,92,246,.55);
+  background:rgba(139,92,246,.08);min-height:76px;align-items:center;
+}
+.order-item{
+  padding:12px 16px;border-radius:12px;border:2px solid rgba(255,255,255,.28);
+  background:rgba(139,92,246,.3);color:#fff;font-weight:700;font-size:15px;
+  cursor:pointer;font-family:inherit;transition:.16s;text-align:left;touch-action:manipulation;
+}
+.order-item:hover{border-color:#FBBF24;transform:translateY(-3px)}
+.order-strip{
+  display:flex;flex-direction:column;gap:10px;margin-top:14px;padding:12px;
+  border-radius:16px;border:2px solid rgba(74,222,128,.45);
+  background:rgba(74,222,128,.08);min-height:76px;
+}
+.order-item.in-seq{background:rgba(74,222,128,.26);border-color:rgba(74,222,128,.75);width:100%}
+.order-item.in-seq:hover{transform:translateX(4px)}
+.seq-num{
+  display:inline-block;background:#4ADE80;color:#052E16;border-radius:50%;
+  width:24px;height:24px;line-height:24px;text-align:center;font-size:13px;
+  margin-right:8px;font-weight:900;
+}
+.order-empty{color:#A5B4FC;font-size:14px;text-align:center;padding:14px;font-weight:700}
+
+.check-btn{
+  margin-top:16px;width:100%;
+  background:linear-gradient(135deg,#22C55E,#15803D);
+  box-shadow:0 6px 0 #14532D, 0 10px 22px rgba(0,0,0,.3);
+}
+.check-btn:active{box-shadow:0 2px 0 #14532D}
+
+/* feedback */
+.feedback{margin-top:16px;border-radius:18px;padding:16px;animation:pop .25s ease}
+@keyframes pop{from{transform:scale(.96);opacity:0}to{transform:none;opacity:1}}
+.feedback.ok{background:rgba(74,222,128,.18);border:2px solid #4ADE80}
+.feedback.no{background:rgba(248,113,113,.18);border:2px solid #F87171}
+.fb-title{font-size:clamp(17px,2.6vw,21px);font-weight:900;margin-bottom:6px}
+.fb-sub{font-size:15px;opacity:.95;margin-bottom:6px;color:#FDE68A;font-weight:800}
+.fb-explain{font-size:15px;margin-bottom:14px;opacity:.96}
+.next-btn{width:100%;background:linear-gradient(135deg,#3B82F6,#1D4ED8);box-shadow:0 6px 0 #1E3A8A,0 10px 22px rgba(0,0,0,.3)}
+.next-btn:active{box-shadow:0 2px 0 #1E3A8A}
+
+/* ===== ФИНАЛ ===== */
+.final-card{max-width:780px;margin:20px auto;text-align:center;padding:28px 22px}
+#finalIcon{font-size:clamp(56px,12vw,90px);line-height:1;animation:float 3s ease-in-out infinite}
+.final-card h1{font-size:clamp(22px,4.4vw,34px);margin:10px 0 6px;font-weight:900}
+#finalRank{
+  display:inline-block;font-size:clamp(17px,3vw,24px);font-weight:900;
+  padding:10px 24px;border-radius:16px;margin:10px 0 18px;
+  background:linear-gradient(135deg,#F59E0B,#F97316);
+  box-shadow:0 8px 26px rgba(249,115,22,.4);
+}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:20px}
+.stat{
+  background:rgba(139,92,246,.16);border:1px solid rgba(139,92,246,.42);
+  border-radius:14px;padding:12px 8px;
+}
+.stat .s-icon{font-size:24px}
+.stat .s-val{font-size:20px;font-weight:900;color:#FDE68A}
+.stat .s-lab{font-size:12px;color:#C4B5FD;font-weight:700}
+.ach-title{font-size:16px;font-weight:900;margin-bottom:10px;color:#C4B5FD}
+.ach-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:22px}
+.ach{
+  display:flex;align-items:center;gap:10px;text-align:left;
+  border-radius:14px;padding:10px 12px;border:2px solid;
+}
+.ach.on{background:rgba(251,191,36,.18);border-color:#FBBF24;box-shadow:0 0 18px rgba(251,191,36,.25)}
+.ach.off{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.14);opacity:.5;filter:grayscale(1)}
+.ach .a-icon{font-size:24px}
+.ach .a-name{font-size:13px;font-weight:900}
+.ach .a-desc{font-size:11px;opacity:.8;line-height:1.25}
+
+/* тосты */
+#toasts{position:fixed;top:14px;right:14px;z-index:999;display:flex;flex-direction:column;gap:10px;max-width:330px;pointer-events:none}
+.toast{
+  background:linear-gradient(135deg,#F59E0B,#F97316);
+  padding:12px 16px;border-radius:14px;font-weight:800;font-size:14px;
+  box-shadow:0 10px 30px rgba(0,0,0,.45);animation:slideIn .35s ease;
+}
+.toast.info{background:linear-gradient(135deg,#8B5CF6,#3B82F6)}
+.toast.good{background:linear-gradient(135deg,#22C55E,#15803D)}
+@keyframes slideIn{from{transform:translateX(120%);opacity:0}to{transform:none;opacity:1}}
+.toast.out{animation:slideOut .35s ease forwards}
+@keyframes slideOut{to{transform:translateX(120%);opacity:0}}
+
+@media(max-width:560px){
+  body{padding:6px}
+  .card{padding:14px;border-radius:18px}
+  .start-card{padding:22px 14px;margin:10px auto}
+  .hud{padding:8px;gap:6px;border-radius:16px}
+  .hud-chip{padding:5px 9px;font-size:13px;border-radius:10px}
+  .chip-label{font-size:13px}
+  #hudLives{font-size:12px;letter-spacing:-3px}
+  .opt{padding:13px 14px;font-size:15px;min-height:58px}
+  .match-item{font-size:13px;padding:11px 7px;min-height:52px}
+  .cat-bins{grid-template-columns:1fr 1fr;gap:8px}
+  .cat-bin{min-height:120px;padding:8px}
+  .tf-btn{padding:20px 8px}
+  .q-card{padding:14px}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+<div id="toasts"></div>
+<div id="app">
+
+  <!-- ======= СТАРТ ======= -->
+  <div class="screen active" id="startScreen">
+    <div class="card start-card">
+      <div class="rocket">🚀</div>
+      <h1>Космический квест Scratch-Кота</h1>
+      <h2>🌌 Врата Логики 🌌</h2>
+      <p class="start-desc">
+        Кот-космонавт летит по планетам и открывает <b>кодовые замки</b> с помощью
+        блоков сравнения <b>(&gt; &lt; =)</b>. Помоги ему пройти все 30 врат! 🐱✨
+      </p>
+      <div class="rules-box">
+        <div class="rule"><span>❤️</span>10 жизней</div>
+        <div class="rule"><span>⏱️</span>25 минут</div>
+        <div class="rule"><span>⭐</span>Очки + бонусы</div>
+        <div class="rule"><span>🔥</span>Множитель серии</div>
+        <div class="rule"><span>🎯</span>3 уровня</div>
+        <div class="rule"><span>🧩</span>5 типов заданий</div>
+      </div>
+      <form id="nameForm" autocomplete="off">
+        <input id="playerName" type="text" maxlength="16" placeholder="Введи своё имя, космонавт..." required>
+        <button class="btn big" type="submit">🚀 Начать полёт</button>
+      </form>
+      <div class="ach-title">🏅 Твои медали</div>
+      <div class="ach-list" id="startAchList"></div>
+    </div>
+  </div>
+
+  <!-- ======= ИГРА ======= -->
+  <div class="screen" id="gameScreen">
+    <div class="hud">
+      <div class="hud-chip"><span class="chip-label">👨‍🚀</span><span class="chip-value" id="hudName">Игрок</span></div>
+      <div class="hud-chip"><span class="chip-label">❤️</span><span class="chip-value" id="hudLives">❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️</span></div>
+      <div class="hud-chip"><span class="chip-label">⭐</span><span class="chip-value" id="hudScore">0</span></div>
+      <div class="hud-chip"><span class="chip-label">🔥</span><span class="chip-value" id="hudStreak">x1</span></div>
+      <div class="hud-chip timer" id="timerChip"><span class="chip-label">⏱️</span><span class="chip-value" id="hudTime">25:00</span></div>
+      <div class="hud-chip"><span class="chip-label">🎯</span><span class="chip-value" id="hudLevel">Уровень 1</span></div>
+    </div>
+
+    <div class="progress-row">
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-text" id="progressText">Задание 1 / 30</div>
+    </div>
+
+    <div class="card q-card">
+      <div class="q-top">
+        <span class="q-badge" id="qTypeBadge">🎯 Выбор ответа</span>
+        <span class="q-num" id="qNum">Задание 1 / 30</span>
+      </div>
+      <h2 class="q-title" id="qTitle"></h2>
+      <div class="q-body" id="qBody"></div>
+      <div class="feedback hidden" id="feedback"></div>
+    </div>
+  </div>
+
+  <!-- ======= ФИНАЛ ======= -->
+  <div class="screen" id="finalScreen">
+    <div class="card final-card">
+      <div id="finalIcon">🏆</div>
+      <h1 id="finalTitle">Полёт завершён!</h1>
+      <div id="finalRank">🥇 Эксперт Логики</div>
+      <div class="stats-grid" id="finalStats"></div>
+      <div class="ach-title">🏅 Разблокированные медали</div>
+      <div class="ach-list" id="finalAchList"></div>
+      <button class="btn big" id="restartBtn">🔄 Сыграть снова</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ==================== УТИЛИТЫ ==================== */
+function shuffle(a){
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    const t=a[i]; a[i]=a[j]; a[j]=t;
+  }
+  return a;
+}
+function el(tag,cls,html){
+  const e=document.createElement(tag);
+  if(cls) e.className=cls;
+  if(html!==undefined) e.innerHTML=html;
+  return e;
+}
+function fmtTime(sec){
+  sec=Math.max(0,Math.floor(sec));
+  const m=Math.floor(sec/60), s=sec%60;
+  return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+}
+
+/* ==================== ЗВУК (Web Audio API) ==================== */
+let AC=null;
+function ac(){
+  if(!AC){
+    try{ AC=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ return null; }
+  }
+  if(AC.state==='suspended'){ AC.resume(); }
+  return AC;
+}
+function tone(freq,start,dur,type,vol){
+  const c=ac(); if(!c) return;
+  const t=c.currentTime+start;
+  const o=c.createOscillator();
+  const g=c.createGain();
+  o.type=type||'sine';
+  o.frequency.setValueAtTime(freq,t);
+  o.connect(g); g.connect(c.destination);
+  g.gain.setValueAtTime(0.0001,t);
+  g.gain.exponentialRampToValueAtTime(vol||0.14,t+0.02);
+  g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+  o.start(t); o.stop(t+dur+0.06);
+}
+function sfxClick(){ tone(540,0,0.06,'square',0.045); }
+function sfxCorrect(){ tone(660,0,0.12,'triangle',0.12); tone(880,0.09,0.16,'triangle',0.12); tone(1174,0.2,0.2,'triangle',0.10); }
+function sfxWrong(){ tone(210,0,0.18,'sawtooth',0.10); tone(150,0.15,0.28,'sawtooth',0.10); }
+function sfxLevelUp(){ tone(587,0,0.11,'sine',0.11); tone(784,0.11,0.13,'sine',0.11); tone(1047,0.23,0.22,'sine',0.11); }
+function sfxVictory(){
+  const n=[523,659,784,1047,1319];
+  n.forEach((f,i)=>tone(f,i*0.13,0.36,'triangle',0.12));
+  tone(1568,0.68,0.75,'triangle',0.11);
+  tone(1047,0.68,0.75,'sine',0.09);
+}
+function sfxGameOver(){
+  const n=[440,370,294,220,165];
+  n.forEach((f,i)=>tone(f,i*0.19,0.38,'sawtooth',0.10));
+  tone(110,1.0,0.9,'sine',0.09);
+}
+
+/* ==================== АЧИВКИ ==================== */
+const ACH_KEY='scratch_gate_achievements_v1';
+const ACHIEVEMENTS={
+  first_win:{icon:'🏅',name:'Первая победа',desc:'Пройти все 30 заданий квеста'},
+  combo_master:{icon:'🔥',name:'Мастер Комбо',desc:'Достичь множителя серии x2'},
+  no_mistakes:{icon:'💎',name:'Без ошибок',desc:'Пройти игру, не потеряв ни одной жизни'},
+  scratch_expert:{icon:'🧠',name:'Знаток Scratch',desc:'Дать 28 и более правильных ответов'}
+};
+function getAch(){
+  try{
+    const raw=localStorage.getItem(ACH_KEY);
+    const arr=raw?JSON.parse(raw):[];
+    return Array.isArray(arr)?arr:[];
+  }catch(e){ return []; }
+}
+function unlockAch(id){
+  const arr=getAch();
+  if(arr.indexOf(id)===-1){
+    arr.push(id);
+    try{ localStorage.setItem(ACH_KEY,JSON.stringify(arr)); }catch(e){}
+    toast(ACHIEVEMENTS[id].icon+' Медаль: '+ACHIEVEMENTS[id].name+'!','good');
+    return true;
+  }
+  return false;
+}
+
+/* ==================== ТОСТЫ ==================== */
+function toast(html,cls){
+  const box=document.getElementById('toasts');
+  const t=el('div','toast '+(cls||''),html);
+  box.appendChild(t);
+  setTimeout(()=>{ t.classList.add('out'); setTimeout(()=>t.remove(),380); },2800);
+}
+
+/* ==================== ВОПРОСЫ ==================== */
+const TYPE_NAMES={
+  choice:'🎯 Выбор ответа',
+  truefalse:'⚡ Верно / Неверно',
+  matching:'🔗 Соедини пары',
+  category:'🧺 Две корзины',
+  order:'🧩 Правильный порядок'
+};
+const LEVEL_NAMES={
+  1:'🌱 Новичок Scratch',
+  2:'⚙️ Логик-Программист',
+  3:'👑 Мастер Scratch'
+};
+
+const QUESTIONS=[
+/* ================= УРОВЕНЬ 1 ================= */
+{
+  level:1,type:'choice',
+  title:'В какой категории блоков Scratch живут операторы сравнения? 🤔',
+  options:['Зелёная категория «Операторы» 🐱','Синяя категория «Движение» 🏃','Фиолетовая категория «Внешность» 🎨','Жёлтая категория «События» ⚡'],
+  correct:'Зелёная категория «Операторы» 🐱',
+  explain:'Операторы сравнения (>, <, =) живут в зелёной категории «Операторы» 🐱'
+},
+{
+  level:1,type:'truefalse',
+  title:'Блоки операторов сравнения имеют шестиугольную форму? 📐',
+  correct:true,
+  explain:'Да! Шестиугольник — признак логического блока, который возвращает Истину или Ложь ✅'
+},
+{
+  level:1,type:'choice',
+  title:'Какой знак проверяет, что первое число больше второго? 🔍',
+  options:['>','<','=','≠'],
+  correct:'>',
+  explain:'Знак «>» читается «больше» 🟢'
+},
+{
+  level:1,type:'matching',
+  title:'Соотнеси знаки и их названия ⚖️',
+  pairs:[['>','Больше'],['<','Меньше'],['=','Равно']],
+  explain:'> — больше, < — меньше, = — равно ⚖️'
+},
+{
+  level:1,type:'truefalse',
+  title:'Результат сравнения в Scratch может быть только ИСТИНА или ЛОЖЬ? ✅',
+  correct:true,
+  explain:'Верно! Логический блок всегда возвращает одно из двух значений: True или False 🎯'
+},
+{
+  level:1,type:'choice',
+  title:'Какое выражение вернёт ИСТИНУ? 🧮',
+  options:['10 > 3','2 > 8','5 = 0','1 < 0'],
+  correct:'10 > 3',
+  explain:'10 действительно больше 3, значит результат — Истина ✅'
+},
+{
+  level:1,type:'category',
+  title:'Распредели выражения по корзинам: ИСТИНА ✅ и ЛОЖЬ ❌',
+  items:[
+    {text:'7 > 2',cat:'true'},
+    {text:'5 = 5',cat:'true'},
+    {text:'1 < 9',cat:'true'},
+    {text:'3 > 8',cat:'false'},
+    {text:'4 = 0',cat:'false'},
+    {text:'10 < 2',cat:'false'}
+  ],
+  explain:'7>2 ✅, 5=5 ✅, 1<9 ✅ — истина. 3>8 ❌, 4=0 ❌, 10<2 ❌ — ложь.'
+},
+{
+  level:1,type:'choice',
+  title:'Что вернёт блок (4 = 4) в Scratch? 🤖',
+  options:['Истина (True) 🟢','Ложь (False) 🔴','Ошибку ⚠️','Число 4 🔢'],
+  correct:'Истина (True) 🟢',
+  explain:'4 равно 4 — значит результат сравнения Истина (True) 🟢'
+},
+{
+  level:1,type:'order',
+  title:'Расставь знаки по возрастанию строгости: от самого «мягкого» к самому «строгому» ⚖️',
+  items:['=','<','>'],
+  explain:'Сначала равенство «=», потом «меньше» <, затем «больше» > ⚖️'
+},
+{
+  level:1,type:'truefalse',
+  title:'Знак «<» означает «Больше»? 🤨',
+  correct:false,
+  explain:'Нет! «<» означает «меньше». «Больше» — это знак «>» ❌'
+},
+
+/* ================= УРОВЕНЬ 2 ================= */
+{
+  level:2,type:'choice',
+  title:'Переменная «Очки» = 8. Что вернёт блок (Очки > 5)? 🏆',
+  options:['Истина (True) 🏆','Ложь (False) 💔','Ошибка ⚠️','Число 8 🔢'],
+  correct:'Истина (True) 🏆',
+  explain:'8 больше 5, поэтому условие истинно ✅'
+},
+{
+  level:2,type:'choice',
+  title:'Переменная «Жизни» = 0. Что вернёт блок (Жизни > 0)? 💔',
+  options:['Ложь (False) 💔','Истина (True) 🏆','Ошибка ⚠️','Число 0 🔢'],
+  correct:'Ложь (False) 💔',
+  explain:'0 не больше 0, значит результат — Ложь ❌'
+},
+{
+  level:2,type:'matching',
+  title:'Соотнеси значение переменной «Скорость» с результатом блока (Скорость < 10) 🚀',
+  pairs:[['Скорость = 5','Истина ✅'],['Скорость = 15','Ложь ❌'],['Скорость = 10','Ложь ❌']],
+  explain:'5 < 10 — Истина ✅. А 15 < 10 и 10 < 10 — Ложь ❌ (10 не меньше 10!).'
+},
+{
+  level:2,type:'category',
+  title:'Игрок набрал 15 монет 🪙. Распредели блоки условий: выполнятся или нет?',
+  items:[
+    {text:'Монеты > 10',cat:'true'},
+    {text:'Монеты = 15',cat:'true'},
+    {text:'Монеты < 20',cat:'true'},
+    {text:'Монеты < 5',cat:'false'},
+    {text:'Монеты = 10',cat:'false'},
+    {text:'Монеты > 50',cat:'false'}
+  ],
+  explain:'При 15 монетах истинны: >10, =15, <20. Ложны: <5, =10, >50.'
+},
+{
+  level:2,type:'choice',
+  title:'Какое число нужно вставить вместо [?], чтобы ( [?] > 12 ) было ИСТИНОЙ? 🔢',
+  options:['15','12','10','5'],
+  correct:'15',
+  explain:'Только 15 больше 12. Числа 12, 10 и 5 условие делают ложным ✅'
+},
+{
+  level:2,type:'truefalse',
+  title:'Если переменная «Уровень» равна 3, то блок (Уровень = 3) выдаст FALSE? 🤨',
+  correct:false,
+  explain:'Неверно! 3 = 3 — это Истина (True) ✅'
+},
+{
+  level:2,type:'order',
+  title:'Собери правильный порядок слов во фразе 📝',
+  items:['Результат','Сравнения','Это','Логический','Ответ'],
+  explain:'Получается: «Результат сравнения — это логический ответ» 📝'
+},
+{
+  level:2,type:'choice',
+  title:'В какой блок вставляется зелёный шестиугольник сравнения? 🍊',
+  options:['В оранжевый блок «если ... то» 🍊','В синий блок «идти 10 шагов» 🏃','В фиолетовый блок «сказать Привет!» 🎨','В жёлтый блок «когда флажок нажат» ⚡'],
+  correct:'В оранжевый блок «если ... то» 🍊',
+  explain:'Шестиугольник вставляется в ромбовидное гнездо оранжевого блока «если ... то» 🍊'
+},
+{
+  level:2,type:'matching',
+  title:'Сопоставь английские и русские термины Scratch 🌍',
+  pairs:[['True','Истина'],['False','Ложь'],['Operators','Операторы']],
+  explain:'True — Истина, False — Ложь, Operators — Операторы 🌍'
+},
+{
+  level:2,type:'choice',
+  title:'Какое условие проверяет, что таймер игры закончился (время равно 0)? ⏱️',
+  options:['(Время = 0) ⏱️','(Время > 0) ⏱️','(Время < 0) ⏱️','(Время > 10) ⏱️'],
+  correct:'(Время = 0) ⏱️',
+  explain:'Время равно нулю — значит нужно точное равенство: (Время = 0) ⏱️'
+},
+
+/* ================= УРОВЕНЬ 3 ================= */
+{
+  level:3,type:'choice',
+  title:'Кот исполняет скрипт: [если &lt; Монеты &gt; 5 &gt; то: сказать «Ура!»]. У игрока 5 монет. Скажет ли Кот «Ура!»? 😼',
+  options:['Нет, потому что 5 не больше 5 😼','Да, потому что 5 = 5 😺','Да, потому что монет достаточно 🎉','Будет ошибка ⚠️'],
+  correct:'Нет, потому что 5 не больше 5 😼',
+  explain:'Условие «5 > 5» ложно, поэтому команда «сказать Ура!» не выполнится 😼'
+},
+{
+  level:3,type:'truefalse',
+  title:'Чтобы Кот реагировал и на 5 монет, условие должно быть (Монеты = 5) или (Монеты > 4)? ✅',
+  correct:true,
+  explain:'Верно! И 5 = 5, и 5 > 4 дадут Истину, значит Кот скажет «Ура!» ✅'
+},
+{
+  level:3,type:'order',
+  title:'Собери из блоков правильный скрипт проверки победы 🏆',
+  items:['когда флажок нажат 🏁','если < Очки > 9 > то 🍊','сказать «Победа!» в течение 2 секунд 🎉'],
+  explain:'Сначала событие «когда флажок нажат», затем условие «если...то», внутри — команда «сказать» 🏆'
+},
+{
+  level:3,type:'category',
+  title:'Кот проверяет код: [если < Здоровье < 1 > то: Конец игры]. Распредели ситуации 🩺',
+  items:[
+    {text:'Здоровье = 0',cat:'true'},
+    {text:'Здоровье = 1',cat:'false'},
+    {text:'Здоровье = 5',cat:'false'},
+    {text:'Здоровье = 10',cat:'false'}
+  ],
+  explain:'Условие «Здоровье < 1» истинно только при 0. При 1, 5 и 10 игра продолжается 🩺'
+},
+{
+  level:3,type:'choice',
+  title:'Какая ошибка допущена в блоке [если &lt; 5 &gt; 10 &gt; то: Звук «Победа»]? ⚠️',
+  options:['Условие всегда ложно, звук никогда не сыграет ⚠️','Условие всегда истинно, звук играет всегда 🔊','Не хватает переменной 📦','Знак «>» нельзя использовать в Scratch 🚫'],
+  correct:'Условие всегда ложно, звук никогда не сыграет ⚠️',
+  explain:'5 никогда не больше 10 — условие всегда Ложь, поэтому звук не сыграет ⚠️'
+},
+{
+  level:3,type:'matching',
+  title:'Найди соответствие между игровым событием и блоком 🎮',
+  pairs:[['Переход на уровень 2 🚀','(Очки > 100)'],['Проигрыш в игре 💀','(Жизни = 0)'],['Бонусная скорость ⚡','(Монеты = 50)']],
+  explain:'Новый уровень — когда очков больше 100, проигрыш — когда жизни равны 0, бонус — при 50 монетах 🎮'
+},
+{
+  level:3,type:'choice',
+  title:'Игрок имеет 3 ключа 🔑. Какое выражение вернёт ИСТИНУ?',
+  options:['(Ключи < 5) 🔑','(Ключи > 5) 🔑','(Ключи = 5) 🔑','(Ключи > 10) 🔑'],
+  correct:'(Ключи < 5) 🔑',
+  explain:'3 меньше 5 — это истина. Остальные условия при 3 ключах ложны 🔑'
+},
+{
+  level:3,type:'truefalse',
+  title:'Оператор (=) проверяет точное равенство двух чисел или переменных? ✅',
+  correct:true,
+  explain:'Да! «=» возвращает Истину только при точном совпадении значений ✅'
+},
+{
+  level:3,type:'order',
+  title:'Расставь шаги работы алгоритма ветвления 🧩',
+  items:[
+    'Получить значение переменной 📦',
+    'Сравнить значение с помощью оператора (>, <, =) ⚖️',
+    'Получить результат (Истина / Ложь) ✅',
+    'Выполнить или пропустить действие внутри «если...то» 🍊'
+  ],
+  explain:'Сначала значение, потом сравнение, затем логический результат и только затем действие 🧩'
+},
+{
+  level:3,type:'choice',
+  title:'Почему операторы сравнения называют фундаментом игровой логики? 🧠',
+  options:['Они позволяют программе принимать решения в зависимости от действий игрока 🧠','Они делают картинку красивее 🎨','Они ускоряют работу компьютера ⚡','Они нужны только для звука 🔊'],
+  correct:'Они позволяют программе принимать решения в зависимости от действий игрока 🧠',
+  explain:'Именно сравнения дают программе возможность «думать» и выбирать действие 🧠'
+}
+];
+
+/* ==================== СОСТОЯНИЕ ==================== */
+const TOTAL_TIME=1500;
+const MAX_LIVES=10;
+let S=null;
+let timerId=null;
+
+/* ==================== HUD ==================== */
+function updateHUD(){
+  if(!S) return;
+  document.getElementById('hudName').textContent=S.name;
+  let hearts='';
+  for(let i=0;i<MAX_LIVES;i++) hearts += (i<S.lives?'❤️':'🖤');
+  document.getElementById('hudLives').textContent=hearts;
+  document.getElementById('hudScore').textContent=S.score;
+  document.getElementById('hudStreak').textContent='x'+S.multiplier;
+  const q=QUESTIONS[Math.min(S.index,QUESTIONS.length-1)];
+  document.getElementById('hudLevel').textContent='Ур.'+q.level+' · '+LEVEL_NAMES[q.level].replace(/^\S+\s/,'');
+  document.getElementById('progressFill').style.width=((S.index)/QUESTIONS.length*100)+'%';
+  document.getElementById('progressText').textContent='Задание '+Math.min(S.index+1,30)+' / 30';
+}
+function updateTimer(){
+  if(!S) return;
+  const t=document.getElementById('hudTime');
+  t.textContent=fmtTime(S.time);
+  const chip=document.getElementById('timerChip');
+  if(S.time<=60) chip.classList.add('danger'); else chip.classList.remove('danger');
+}
+
+/* ==================== ЗАПУСК ИГРЫ ==================== */
+function startGame(name){
+  S={
+    name:name,
+    lives:MAX_LIVES,
+    score:0,
+    streak:0,
+    multiplier:1,
+    maxMultiplier:1,
+    time:TOTAL_TIME,
+    index:0,
+    correct:0,
+    wrong:0,
+    answered:false,
+    questionStart:Date.now(),
+    currentLevel:0
+  };
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('gameScreen').classList.add('active');
+  updateHUD();
+  updateTimer();
+  renderQuestion();
+  clearInterval(timerId);
+  timerId=setInterval(()=>{
+    if(!S) return;
+    S.time--;
+    updateTimer();
+    if(S.time<=0){
+      clearInterval(timerId);
+      endGame(false,'time');
+    }
+  },1000);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ==================== РЕНДЕР ВОПРОСА ==================== */
+function renderQuestion(){
+  const q=QUESTIONS[S.index];
+  S.answered=false;
+  S.questionStart=Date.now();
+
+  if(q.level!==S.currentLevel){
+    S.currentLevel=q.level;
+    sfxLevelUp();
+    toast('🚀 Уровень '+q.level+': '+LEVEL_NAMES[q.level],'info');
+  }
+
+  document.getElementById('qTitle').innerHTML=q.title;
+  document.getElementById('qNum').textContent='Задание '+(S.index+1)+' / 30';
+  document.getElementById('qTypeBadge').textContent=TYPE_NAMES[q.type];
+
+  const body=document.getElementById('qBody');
+  body.innerHTML='';
+  const fb=document.getElementById('feedback');
+  fb.className='feedback hidden';
+  fb.innerHTML='';
+
+  if(q.type==='choice') renderChoice(q,body);
+  else if(q.type==='truefalse') renderTrueFalse(q,body);
+  else if(q.type==='matching') renderMatching(q,body);
+  else if(q.type==='category') renderCategory(q,body);
+  else if(q.type==='order') renderOrder(q,body);
+
+  updateHUD();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ---------- ТИП 1: ВЫБОР ---------- */
+function renderChoice(q,body){
+  const opts=shuffle(q.options.slice());
+  const wrap=el('div','options');
+  opts.forEach((text,i)=>{
+    const b=el('button','opt',
+      '<span class="opt-key">'+'ABCD'[i]+'</span><span class="opt-text">'+text+'</span>');
+    b.dataset.text=text;
+    b.onclick=()=>{
+      if(S.answered) return;
+      sfxClick();
+      const ok=(text===q.correct);
+      Array.from(wrap.children).forEach(c=>{
+        c.classList.add('disabled');
+        if(c.dataset.text===q.correct) c.classList.add('good');
+      });
+      if(!ok) b.classList.add('bad');
+      submitAnswer(ok);
+    };
+    wrap.appendChild(b);
+  });
+  body.appendChild(wrap);
+}
+
+/* ---------- ТИП 2: ВЕРНО / НЕВЕРНО ---------- */
+function renderTrueFalse(q,body){
+  const wrap=el('div','tf-wrap');
+  const mk=(label,val,cls)=>{
+    const b=el('button','tf-btn '+cls,label);
+    b.onclick=()=>{
+      if(S.answered) return;
+      sfxClick();
+      const ok=(val===q.correct);
+      Array.from(wrap.children).forEach(c=>{
+        c.disabled=true;
+        if((c.dataset.val==='true')===q.correct) c.classList.add('good');
+      });
+      if(!ok) b.classList.add('bad');
+      submitAnswer(ok);
+    };
+    b.dataset.val=String(val);
+    return b;
+  };
+  wrap.appendChild(mk('✅ ВЕРНО','true','tf-true'));
+  wrap.appendChild(mk('❌ НЕВЕРНО','false','tf-false'));
+  body.appendChild(wrap);
+}
+
+/* ---------- ТИП 3: СОПОСТАВЛЕНИЕ ---------- */
+function renderMatching(q,body){
+  const lefts=q.pairs.map((p,i)=>({id:i,text:p[0]}));
+  const rights=q.pairs.map((p,i)=>({id:i,text:p[1]}));
+  shuffle(lefts); shuffle(rights);
+  const matches={};
+  let selectedLid=null;
+  const COLORS=['#8B5CF6','#F59E0B','#10B981','#3B82F6','#EC4899','#14B8A6'];
+
+  const wrap=el('div','match-wrap');
+  const grid=el('div','match-grid');
+  const colL=el('div','match-col');
+  const colR=el('div','match-col');
+  const leftEls={}, rightEls={};
+
+  lefts.forEach(l=>{
+    const b=el('button','match-item',l.text);
+    b.onclick=()=>{
+      if(S.answered) return;
+      sfxClick();
+      if(matches[l.id]!==undefined){
+        delete matches[l.id];
+        selectedLid=null;
+        paint();
+      }else{
+        selectedLid=(selectedLid===l.id?null:l.id);
+        paint();
+      }
+    };
+    leftEls[l.id]=b;
+    colL.appendChild(b);
+  });
+  rights.forEach(r=>{
+    const b=el('button','match-item',r.text);
+    b.onclick=()=>{
+      if(S.answered) return;
+      if(selectedLid===null){ toast('👈 Сначала выбери элемент слева','info'); return; }
+      const taken=Object.keys(matches).some(k=>matches[k]===r.id);
+      if(taken) return;
+      matches[selectedLid]=r.id;
+      selectedLid=null;
+      sfxClick();
+      paint();
+    };
+    rightEls[r.id]=b;
+    colR.appendChild(b);
+  });
+
+  grid.appendChild(colL);
+  grid.appendChild(colR);
+  wrap.appendChild(grid);
+
+  const checkBtn=el('button','btn check-btn','✅ Проверить');
+  checkBtn.disabled=true;
+  checkBtn.onclick=()=>{
+    if(S.answered) return;
+    sfxClick();
+    submitAnswer(checkMatching());
+  };
+  wrap.appendChild(checkBtn);
+
+  function checkMatching(){
+    for(const lid in matches){
+      const rid=matches[lid];
+      const rightText=q.pairs[Number(lid)][1];
+      const chosen=rights.find(r=>r.id===rid);
+      if(!chosen || chosen.text!==rightText) return false;
+    }
+    return true;
+  }
+
+  function paint(){
+    Object.keys(leftEls).forEach(k=>{
+      const e=leftEls[k];
+      e.className='match-item';
+      e.style.borderColor='';
+      e.style.background='';
+    });
+    Object.keys(rightEls).forEach(k=>{
+      const e=rightEls[k];
+      e.className='match-item';
+      e.style.borderColor='';
+      e.style.background='';
+    });
+    if(selectedLid!==null && leftEls[selectedLid]) leftEls[selectedLid].classList.add('selected');
+    Object.keys(matches).forEach(lid=>{
+      const rid=matches[lid];
+      const c=COLORS[Number(lid)%COLORS.length];
+      const le=leftEls[lid], re=rightEls[rid];
+      if(le){ le.style.borderColor=c; le.style.background=c+'44'; le.classList.add('matched'); }
+      if(re){ re.style.borderColor=c; re.style.background=c+'44'; re.classList.add('matched'); }
+    });
+    checkBtn.disabled=(Object.keys(matches).length!==q.pairs.length);
+  }
+  paint();
+  body.appendChild(wrap);
+}
+
+/* ---------- ТИП 4: КОРЗИНЫ ---------- */
+function renderCategory(q,body){
+  const items=q.items.map((it,i)=>({id:i,text:it.text,cat:it.cat}));
+  shuffle(items);
+  const placements={};
+  let selectedId=null;
+
+  const wrap=el('div','cat-wrap');
+  const pool=el('div','cat-pool');
+  const bins=el('div','cat-bins');
+  const binTrue=el('div','cat-bin bin-true');
+  const binFalse=el('div','cat-bin bin-false');
+  const titleT=el('div','bin-title','✅ ИСТИНА');
+  const titleF=el('div','bin-title','❌ ЛОЖЬ');
+  const itemsT=el('div','bin-items');
+  const itemsF=el('div','bin-items');
+  binTrue.appendChild(titleT); binTrue.appendChild(itemsT);
+  binFalse.appendChild(titleF); binFalse.appendChild(itemsF);
+  bins.appendChild(binTrue); bins.appendChild(binFalse);
+
+  const checkBtn=el('button','btn check-btn','✅ Проверить');
+  checkBtn.disabled=true;
+  checkBtn.onclick=()=>{
+    if(S.answered) return;
+    sfxClick();
+    let ok=true;
+    q.items.forEach((it,i)=>{ if(placements[i]!==it.cat) ok=false; });
+    submitAnswer(ok);
+  };
+
+  function paint(){
+    pool.innerHTML=''; itemsT.innerHTML=''; itemsF.innerHTML='';
+    let placedCount=0;
+    items.forEach(it=>{
+      const place=placements[it.id];
+      const b=el('button','cat-item'+(selectedId===it.id?' selected':''),it.text);
+      b.onclick=(ev)=>{
+        ev.stopPropagation();
+        if(S.answered) return;
+        sfxClick();
+        if(place){
+          delete placements[it.id];
+          selectedId=null;
+          paint();
+        }else{
+          selectedId=(selectedId===it.id?null:it.id);
+          paint();
+        }
+      };
+      if(place){
+        placedCount++;
+        (place==='true'?itemsT:itemsF).appendChild(b);
+      }else{
+        pool.appendChild(b);
+      }
+    });
+    if(pool.children.length===0){
+      pool.appendChild(el('div','order-empty','✨ Все элементы распределены!'));
+    }
+    checkBtn.disabled=(placedCount!==items.length);
+  }
+
+  binTrue.onclick=()=>{
+    if(S.answered||selectedId===null) return;
+    sfxClick();
+    placements[selectedId]='true';
+    selectedId=null;
+    paint();
+  };
+  binFalse.onclick=()=>{
+    if(S.answered||selectedId===null) return;
+    sfxClick();
+    placements[selectedId]='false';
+    selectedId=null;
+    paint();
+  };
+
+  wrap.appendChild(pool);
+  wrap.appendChild(bins);
+  wrap.appendChild(checkBtn);
+  paint();
+  body.appendChild(wrap);
+}
+
+/* ---------- ТИП 5: ПОРЯДОК ---------- */
+function renderOrder(q,body){
+  const poolItems=shuffle(q.items.map((t,i)=>({id:i,text:t})));
+  const seq=[];
+
+  const wrap=el('div','order-wrap');
+  const pool=el('div','order-pool');
+  const strip=el('div','order-strip');
+  const checkBtn=el('button','btn check-btn','✅ Проверить');
+  checkBtn.disabled=true;
+  checkBtn.onclick=()=>{
+    if(S.answered) return;
+    sfxClick();
+    let ok=(seq.length===q.items.length);
+    if(ok){
+      for(let i=0;i<seq.length;i++){ if(seq[i].id!==i){ ok=false; break; } }
+    }
+    submitAnswer(ok);
+  };
+
+  function paint(){
+    pool.innerHTML=''; strip.innerHTML='';
+    poolItems.forEach(it=>{
+      if(seq.indexOf(it)!==-1) return;
+      const b=el('button','order-item',it.text);
+      b.onclick=()=>{
+        if(S.answered) return;
+        sfxClick();
+        seq.push(it);
+        paint();
+      };
+      pool.appendChild(b);
+    });
+    if(pool.children.length===0){
+      pool.appendChild(el('div','order-empty','✨ Все блоки расставлены!'));
+    }
+    if(seq.length===0){
+      strip.appendChild(el('div','order-empty','👆 Нажимай на блоки в правильном порядке'));
+    }
+    seq.forEach((it,idx)=>{
+      const b=el('button','order-item in-seq','<span class="seq-num">'+(idx+1)+'</span>'+it.text);
+      b.onclick=()=>{
+        if(S.answered) return;
+        sfxClick();
+        seq.splice(idx,1);
+        paint();
+      };
+      strip.appendChild(b);
+    });
+    checkBtn.disabled=(seq.length!==q.items.length);
+  }
+
+  wrap.appendChild(pool);
+  wrap.appendChild(strip);
+  wrap.appendChild(checkBtn);
+  paint();
+  body.appendChild(wrap);
+}
+
+/* ==================== ОТВЕТ ==================== */
+function submitAnswer(ok){
+  if(S.answered) return;
+  S.answered=true;
+
+  const elapsed=(Date.now()-S.questionStart)/1000;
+  let gained=0;
+
+  if(ok){
+    S.correct++;
+    S.streak++;
+    S.multiplier=(S.streak>=4?2:(S.streak>=2?1.5:1));
+    if(S.multiplier>S.maxMultiplier) S.maxMultiplier=S.multiplier;
+    const speedBonus=Math.max(0,Math.round((20-Math.min(elapsed,20))*5));
+    gained=Math.round((100+speedBonus)*S.multiplier);
+    S.score+=gained;
+    sfxCorrect();
+    if(S.multiplier>=2 && !S.comboToastShown){
+      S.comboToastShown=true;
+      unlockAch('combo_master');
+    }
+  }else{
+    S.wrong++;
+    S.streak=0;
+    S.multiplier=1;
+    S.lives--;
+    sfxWrong();
+  }
+
+  updateHUD();
+  showFeedback(ok,gained,elapsed);
+}
+
+function showFeedback(ok,gained,elapsed){
+  const q=QUESTIONS[S.index];
+  const fb=document.getElementById('feedback');
+  fb.className='feedback '+(ok?'ok':'no');
+  let html='';
+  if(ok){
+    const speedBonus=Math.max(0,Math.round((20-Math.min(elapsed,20))*5));
+    html+='<div class="fb-title">✅ Верно! +'+gained+' ⭐</div>';
+    html+='<div class="fb-sub">🎯 База: 100 · ⚡ Бонус скорости: +'+speedBonus+' · 🔥 Множитель: x'+S.multiplier+'</div>';
+  }else{
+    html+='<div class="fb-title">❌ Ошибка! −1 ❤️</div>';
+    html+='<div class="fb-sub">Осталось жизней: '+Math.max(0,S.lives)+' из '+MAX_LIVES+'</div>';
+  }
+  html+='<div class="fb-explain">💡 '+q.explain+'</div>';
+  const isLast=(S.index===QUESTIONS.length-1);
+  const noLives=(S.lives<=0);
+  html+='<button class="btn next-btn" id="nextBtn">'+(isLast||noLives?'🏁 К итогам':'Далее ➡️')+'</button>';
+  fb.innerHTML=html;
+  document.getElementById('nextBtn').onclick=nextQuestion;
+  fb.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function nextQuestion(){
+  if(S.lives<=0){ endGame(false,'lives'); return; }
+  S.index++;
+  if(S.index>=QUESTIONS.length){ endGame(true,'finish'); return; }
+  renderQuestion();
+}
+
+/* ==================== ФИНАЛ ==================== */
+function endGame(win,reason){
+  clearInterval(timerId);
+  if(!S) return;
+
+  const correct=S.correct;
+  const livesLeft=Math.max(0,S.lives);
+  const timeSpent=TOTAL_TIME-Math.max(0,S.time);
+
+  let rank,icon;
+  if(correct>=28){ rank='Легенда Scratch'; icon='🪅'; }
+  else if(correct>=23){ rank='Эксперт Логики'; icon='🥇'; }
+  else if(correct>=17){ rank='Продвинутый Программист'; icon='🥈'; }
+  else { rank='Ученик Scratch'; icon='🥉'; }
+
+  const finishedAll=(reason==='finish');
+  if(finishedAll) unlockAch('first_win');
+  if(finishedAll && livesLeft===MAX_LIVES) unlockAch('no_mistakes');
+  if(correct>=28) unlockAch('scratch_expert');
+  if(S.maxMultiplier>=2) unlockAch('combo_master');
+
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('finalScreen').classList.add('active');
+
+  const winIcon=document.getElementById('finalIcon');
+  const titleEl=document.getElementById('finalTitle');
+
+  if(finishedAll && correct>=17){
+    winIcon.textContent='🏆';
+    titleEl.textContent='Победа! Врата Логики открыты!';
+    sfxVictory();
+  }else if(finishedAll){
+    winIcon.textContent='🌟';
+    titleEl.textContent='Полёт завершён!';
+    sfxVictory();
+  }else{
+    winIcon.textContent=(reason==='time')?'⏰':'💥';
+    titleEl.textContent=(reason==='time')?'Время вышло!':'Жизни закончились!';
+    sfxGameOver();
+  }
+
+  const rankEl=document.getElementById('finalRank');
+  rankEl.textContent=icon+' '+rank;
+
+  const stats=document.getElementById('finalStats');
+  stats.innerHTML='';
+  const statData=[
+    {i:'👨‍🚀',v:S.name,l:'Игрок'},
+    {i:'⭐',v:S.score,l:'Очки'},
+    {i:'✅',v:correct+' / 30',l:'Правильных'},
+    {i:'❤️',v:livesLeft+' / '+MAX_LIVES,l:'Сохранено жизней'},
+    {i:'⏱️',v:fmtTime(timeSpent),l:'Время в полёте'},
+    {i:'🔥',v:'x'+S.maxMultiplier,l:'Макс. множитель'}
+  ];
+  statData.forEach(d=>{
+    const s=el('div','stat');
+    s.innerHTML='<div class="s-icon">'+d.i+'</div><div class="s-val">'+d.v+'</div><div class="s-lab">'+d.l+'</div>';
+    stats.appendChild(s);
+  });
+
+  renderAchList(document.getElementById('finalAchList'));
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ==================== СПИСОК АЧИВОК ==================== */
+function renderAchList(container){
+  const unlocked=getAch();
+  container.innerHTML='';
+  Object.keys(ACHIEVEMENTS).forEach(id=>{
+    const a=ACHIEVEMENTS[id];
+    const on=unlocked.indexOf(id)!==-1;
+    const d=el('div','ach '+(on?'on':'off'));
+    d.innerHTML='<div class="a-icon">'+(on?a.icon:'🔒')+'</div><div><div class="a-name">'+a.name+'</div><div class="a-desc">'+a.desc+'</div></div>';
+    container.appendChild(d);
+  });
+}
+
+/* ==================== СТАРТ / РЕСТАРТ ==================== */
+function goToStart(){
+  clearInterval(timerId);
+  S=null;
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('startScreen').classList.add('active');
+  renderAchList(document.getElementById('startAchList'));
+  document.getElementById('playerName').value='';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+document.getElementById('nameForm').addEventListener('submit',function(e){
+  e.preventDefault();
+  const input=document.getElementById('playerName');
+  const name=(input.value||'').trim().slice(0,16)||'Космонавт';
+  ac();
+  startGame(name);
+});
+
+document.getElementById('restartBtn').addEventListener('click',function(){
+  goToStart();
+});
+
+renderAchList(document.getElementById('startAchList'));
+</script>
+</body>
+</html>
